@@ -58,7 +58,7 @@
 
 	inUrl,
 	watchFolder = argv.d || __dirname,
-	filter = argv.f || '.*\\.js',
+	filter = argv.f || '.*\\.js$',
 
 	runningMessage;
 
@@ -70,7 +70,7 @@
 	exit( MESSAGE.FOLDER_NOT_THERE, watchFolder );
     }
 
-    try	       { filter = new RegExp( filter, 'ig' ); }
+    try	       { filter = new RegExp( filter, 'i' ); }
     catch( e ) { exit( MESSAGE.FILTER_INVALID, filter ); }
 
     /*
@@ -241,24 +241,38 @@
 
     function updateReport() {
 
-	var browserID,
+	var now = +new Date(),
+	    timeFromLastRun,
+	    timerDisplayed,
+	    browserID,
 	    results,
 	    report = '';
 
 	for ( browserID in browsers ) {
 
+	    if ( ! report ) {
+		report += out.f( '\n\nBrowsers attached:\n', 'strong' );
+	    }
+
 	    results = browsers[ browserID ];
 
-	    report += out.f( browserID, styles[ results.state ][ +!!results.failed ] ) +
-		      ' Passed: ' + results.passed +
-		      ' Failed: ' + results.failed +
+	    timeFromLastRun = ! results.time ? 0 : Math.floor( ( now - results.time ) / 1000 );
+
+	    timeDisplayed = results.state === 'finished'
+			    ? ( timeFromLastRun < 3 ? 'Just run!' : timeFromLastRun + ' seconds ago' )
+			    : out.f( 'running ...', 'failed' );
+
+	    report += out.f( browserID.slice( 0, 25 ), styles[ results.state ][ +!!results.failed ] ) +
+		      Array( 26 - browserID.length ).join( ' ' ) +
+				  results.passed + out.f( '✓', 'passed' ) +
+		      ' '	+ results.failed + out.f( '✗', 'failed' ) +
+		      '    → '  + timeDisplayed +
 		      '\n';
 
 	}
 
 	out.clear().print(
 	    runningMessage +
-	    out.f( '\n\nBrowsers attached:\n', 'strong' ) +
 	    report
 	);
 
@@ -317,11 +331,14 @@
 	browsers[ results.browser ] = {
 	    state: 'finished',
 	    passed: summary.passed,
-	    failed: summary.failed
+	    failed: summary.failed,
+	    time: +new Date()
 	};
 
 	updateReport();
 
     }
+
+    setInterval( updateReport, 10000 );
 
 })( this );
