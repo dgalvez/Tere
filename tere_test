@@ -1,0 +1,8 @@
+#!/usr/bin/env node
+
+var exec = require('child_process').exec;
+
+exec( 'node test/absolutePath.js', function ( error, stdout, stderr ) { if ( error !== null ) { console.log( error ); } });
+exec( 'node test/checkGlobal.js', function ( error, stdout, stderr ) { if ( error !== null ) { console.log( error ); } });
+exec( 'node test/findTestFramework.js', function ( error, stdout, stderr ) { if ( error !== null ) { console.log( error ); } });
+exec( 'node test/getScripts.js', function ( error, stdout, stderr ) { if ( error !== null ) { console.log( error ); } });
