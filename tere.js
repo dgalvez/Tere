@@ -75,6 +75,9 @@
 		     */
 		    var html = chunk.toString();
 
+		    /*
+		     * TODO: This check shouldn't be done here but in node-http-proxy
+		     */
 		    if ( ! rhtml.test( html ) ) {
 
 			return chunk;
