@@ -31,13 +31,17 @@ module.exports = function() {
 	    matched = uaMatch( navigator.userAgent );
 	    browserID = matched.browser + ' v' + matched.version;
 
-	    socket.on('reload', function (data) {
+	    socket.on( 'reload', function () {
 		window.location.reload();
+	    });
+
+	    socket.on( 'goto', function ( to ) {
+		window.location.href = to.url;
 	    });
 
 	    QUnit.begin = function() {
 
-		socket.emit( 'suite:started', { id: browserID } );
+		socket.emit( 'suite:started', { id: browserID, url: window.location.href } );
 
 	    };
 
@@ -45,7 +49,8 @@ module.exports = function() {
 
 		socket.emit( 'suite:finished', {
 		    summary: summary,
-		    browser: browserID
+		    browser: browserID,
+		    url: window.location.href
 		});
 
 	    };

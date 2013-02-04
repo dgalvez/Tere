@@ -17,6 +17,7 @@
 	socketIO	  = require( 'socket.io' ),
 	watch	          = require( 'watch' ),
 	fs	          = require( 'fs' ),
+	readline	  = require( 'readline' ),
 
 	httpProxy	  = require( './node-http-proxy/lib/node-http-proxy' ),
 	out		  = require( './src/out/pretty' ),
@@ -237,15 +238,22 @@
 		1: 'shit'
 	    }
 
-	};
+	},
+
+	rl = readline.createInterface({
+	    input: process.stdin,
+	    output: process.stdout
+	});
 
     function updateReport() {
 
 	var now = +new Date(),
 	    timeFromLastRun,
 	    timerDisplayed,
+
 	    browserID,
 	    results,
+
 	    report = '';
 
 	for ( browserID in browsers ) {
@@ -273,8 +281,32 @@
 
 	out.clear().print(
 	    runningMessage +
-	    report
+	    report + '\n'
 	);
+
+	if ( ! report ) {
+	    return;
+	}
+
+	/*
+	 * Let user to load same url in all the browsers attached
+	 */
+
+	rl.question( 'Reload all browsers with same url as: ', function( browserID ) {
+
+	    var browser = browsers[ browserID ];
+
+	    if ( browser && browser.url ) {
+
+		io.sockets.emit( 'goto', { url: browser.url } );
+		out.clear().print( 'Loading ...' );
+		return;
+
+	    }
+
+	    updateReport();
+
+	});
 
     }
 
@@ -301,16 +333,20 @@
 
     function suiteStarted( browser ) {
 
-	if ( ! browsers || ! browser.id ) {
+	var url = browser.url,
+	    id = browser.id;
+
+	if ( ! browsers || ! id ) {
 
 	    return;
 
 	}
 
-	browsers[ browser.id ] = {
+	browsers[ id ] = {
 	    state: 'running',
 	    passed: 0,
-	    failed: 0
+	    failed: 0,
+	    url: url
 	};
 
     }
@@ -332,7 +368,8 @@
 	    state: 'finished',
 	    passed: summary.passed,
 	    failed: summary.failed,
-	    time: +new Date()
+	    time: +new Date(),
+	    url: results.url
 	};
 
 	updateReport();
