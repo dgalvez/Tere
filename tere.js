@@ -10,11 +10,14 @@
      * Imports
      * TODO: Pull request to node-http-proxy
      */
-    var	http		  = require( 'http' ),
+    var optimist          = require( 'optimist' ),
+    	http		  = require( 'http' ),
 	request		  = require( 'request' ),
 	url		  = require( 'url' ),
 	socketIO	  = require( 'socket.io' ),
 	watch	          = require( 'watch' ),
+	fs	          = require( 'fs' ),
+
 	httpProxy	  = require( './node-http-proxy/lib/node-http-proxy' ),
 	out		  = require( './src/out/pretty' ),
 	emitterInjection  = require( './src/browser/emitter' )(),
@@ -24,33 +27,78 @@
     /*
      * Constants
      */
-    const rhtml = /<head([^>])*>/;
+    const rhtml = /<head([^>])*>/,
+
+	  MESSAGE = {
+	      USAGE: 'Usage: node tere.js -u [ url ] -d [ path to folder ] -f [ RegExp ]',
+	      FRAMEWORK_NOT_FOUND: 'Test framework not found',
+	      URL_NOT_REACHABLE: '%s -- Url not reachable',
+	      URL_INVALID_FORMAT: '%s -- Invalid url format',
+	      FOLDER_NOT_THERE: '%s -- Folder does not exist',
+	      FILTER_INVALID: '%s -- Invalid RegExp filter for files to be watched'
+	  };
 
     /*
      * Tools
      */
-    var log = function( message ) {
+    var exit = function( message, input ) {
 
-	console.log( message );
+	console.log( MESSAGE.USAGE + '\n' + out.f( message, 'failed' ), input || '' );
 	process.exit( 1 );
 
     };
 
     /*
-     * Input from the user
-     * TODO: Validate and probably sanitize user input - format/filter/folder
+     * User input and its validation
      */
-    var inUrl = url.parse( process.argv[ 2 ] ),
+    var argv = optimist
+		  .usage( MESSAGE.USAGE )
+		  .demand( [ 'u' ] )
+		  .argv,
 
-	filter = RegExp( process.argv[ 3 ] || '.*', 'ig' ),
-	watchFolder = process.argv[ 4 ] || __dirname,
+	inUrl,
+	watchFolder = argv.d || __dirname,
+	filter = argv.f || '.*\\.js',
 
-	runningMessage = 'Running on: ' +
-		         inUrl.protocol +
-		         '//' +
-		         inUrl.host +
+	runningMessage;
+
+    if ( ! /^https?:\/\/.+/i.test( argv.u ) ) {
+	exit( MESSAGE.URL_INVALID_FORMAT, argv.u );
+    }
+
+    if ( watchFolder && ! fs.existsSync( watchFolder ) ) {
+	exit( MESSAGE.FOLDER_NOT_THERE, watchFolder );
+    }
+
+    try	       { filter = new RegExp( filter, 'ig' ); }
+    catch( e ) { exit( MESSAGE.FILTER_INVALID, filter ); }
+
+    /*
+     * At this point it seems user input is ok
+     */
+    inUrl = url.parse( argv.u );
+
+    /*
+     * runningMessage show the current context to the user
+     */
+    runningMessage = 'Running on: ' +
+
+		     out.f(
+
+			 inUrl.protocol +
+			 '//' +
+			 inUrl.host +
 			 ':8001' +
-			 inUrl.path;
+			 inUrl.path
+
+			 , 'passed'
+
+		     ) +
+
+		     '\n' +
+		     'Watching files in ' + out.f( watchFolder, 'dt' ) +
+		     '\n' +
+		     'Matching this RegExp ' + out.f( filter, 'dt' );
 
     /*
      * The main game takes place below
@@ -109,12 +157,14 @@
 
 	    getScripts( body, function( sources ) {
 
+		if ( ! sources || ! sources.length ) {
+		    exit( MESSAGE.FRAMEWORK_NOT_FOUND );
+		}
+
 		findTestFramework( sources, inUrl.href, function( src ) {
 
 		    if ( ! src ) {
-
-			log( 'Test framework not found' );
-
+			exit( MESSAGE.FRAMEWORK_NOT_FOUND );
 		    }
 
 		    testFrameworkTarget = src;
@@ -143,21 +193,17 @@
 		     * TODO: method should be called here
 		     */
 
-		    if ( process.argv[ 3 ] ) {
+		    watch.watchTree( watchFolder, function ( f, curr, prev ) {
 
-			watch.watchTree( watchFolder, function ( f, curr, prev ) {
+			if ( ! ( typeof f === 'object' && prev === null && curr === null ) &&
+			     filter.test( f )
+			   ) {
 
-			    if ( ! ( typeof f === 'object' && prev === null && curr === null ) &&
-				 filter.test( f )
-			       ) {
+			    io.sockets.emit( 'reload' );
 
-				io.sockets.emit( 'reload' );
+			}
 
-			    }
-
-			});
-
-		    }
+		    });
 
 		    out.clear().print( runningMessage );
 
@@ -167,7 +213,7 @@
 
 	} else {
 
-	    log( 'Url not reachable' );
+	    exit( MESSAGE.URL_NOT_REACHABLE, inUrl.href );
 
 	}
 
@@ -211,7 +257,7 @@
 	}
 
 	out.clear().print(
-	    out.f( runningMessage, 'h' ) +
+	    runningMessage +
 	    out.f( '\n\nBrowsers attached:\n', 'strong' ) +
 	    report
 	);
