@@ -1,0 +1,44 @@
+{
+    "name" : "tere",
+    "title" : "Tere",
+    "version" : "0.1.0",
+    "description" : "Simple Javascript Test Driven Development",
+    "main" : "./tere.js",
+    "directories" : {
+        "lib" : "src",
+        "test" : "test"
+    },
+    "dependencies" : {
+        "optimist" : "0.3.5",
+        "request" : "2.9.3",
+        "socket.io" : "0.8.7",
+        "watch" : "0.5.1",
+        "jsdom" : "0.2.10"
+    },
+    "devDependencies" : {
+        "express" : "3.1.0"
+    },
+    "scripts" : {
+        "test" : "tere_test"
+    },
+    "repository" : {
+        "type" : "git",
+        "url" : "https://github.com/dgalvez/Tere.git"
+    },
+    "keywords" : [
+        "javascript",
+        "testing",
+        "unit",
+        "qunit"
+    ],
+    "author" : {
+        "name" : "Daniel Gálvez",
+        "email" : "daniel.galvez.valenzuela@gmail.com",
+        "url" : "https://github.com/dgalvez"
+    },
+    "license" : "MIT/X11",
+    "engine" : {
+        "node" : ">=0.8.18"
+    }
+}
+
