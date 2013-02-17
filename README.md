@@ -48,5 +48,5 @@ where
 ```bash
 -u : Your QUnit test page url
 -d : Path to the folder you want to watch
--f : RegExp to filter files to you want to watch
+-f : RegExp to filter files you want to watch
 ```
