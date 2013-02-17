@@ -1,6 +1,14 @@
 module.exports = function() {
 
-    var method = function() {
+    var init = function() {
+
+	    var window = (function() { return this; })();
+
+	    window.__tereOldDefine__ = window.define;
+	    window.define = function() {};
+
+	},
+	method = function() {
 
 	    var socket = io.connect( 'http://localhost:8001' ),
 		window = (function() { return this; })(),
@@ -64,9 +72,15 @@ module.exports = function() {
 
 	    };
 
+	    window.define = window.__tereOldDefine__;
+
 	};
 
-    return '<script src="/socket.io/socket.io.js"></script><script>(' + method.toString() + ')();</script>';
+    return '<script>(' +
+	       init.toString() +
+	   ')();</script><script src="/socket.io/socket.io.js"></script><script>(' +
+	       method.toString() +
+	   ')();</script>';
 
 };
 
