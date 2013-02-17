@@ -1,4 +1,4 @@
-[Tere] - Simple Javascript Test Driven Development ( with QUnit )
+Tere - Simple Javascript Test Driven Development ( QUnit )
 =================================================================
 
 If you already have a QUnit test page ready,
