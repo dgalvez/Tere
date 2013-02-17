@@ -82,7 +82,7 @@
 		  .argv,
 
 	inUrl,
-	watchFolder = argv.d || __dirname,
+	watchFolder = argv.d || process.cwd(),
 	filter = argv.f || '.*\\.js$',
 
 	runningMessage;

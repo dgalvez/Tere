@@ -9,17 +9,20 @@
         "test" : "test"
     },
     "dependencies" : {
-        "optimist" : "0.3.5",
-        "request" : "2.9.3",
-        "socket.io" : "0.8.7",
-        "watch" : "0.5.1",
-        "jsdom" : "0.2.10"
+        "optimist" : ">=0.3.5",
+        "request" : ">=2.9.3",
+        "socket.io" : ">=0.8.7",
+        "watch" : ">=0.5.1",
+        "jsdom" : ">=0.2.10"
     },
     "devDependencies" : {
         "express" : "3.1.0"
     },
+    "bin" : {
+	"tere" : "./bin/tere"
+    },
     "scripts" : {
-        "test" : "tere_test"
+        "test" : "node tere_test"
     },
     "repository" : {
         "type" : "git",
