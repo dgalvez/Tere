@@ -1,7 +1,7 @@
 /*
  * (\ /)
  * (O.o)
- * (> <) Tere - simple Javascript Test Driven Development
+ * (> <) Tere - Simple Javascript Test Driven Development
  *
  *  Copyright (c) 2013 Daniel Gálvez, daniel.galvez.valenzuela@gmail.com
  *

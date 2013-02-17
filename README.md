@@ -39,10 +39,14 @@ Now you can open the "Running on" url in several browsers and see the test resul
 Full Usage
 --------------------------------------
 
+```bash
 tere -u [ url ] -d [ path to folder ] -f [ RegExp ]
+```
 
 where
 
+```bash
 -u : Your QUnit test page url
 -d : Path to the folder you want to watch
 -f : RegExp to filter files to you want to watch
+```
