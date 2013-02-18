@@ -10,8 +10,8 @@ module.exports = function() {
 	},
 	method = function() {
 
-	    var socket = io.connect( 'http://localhost:8001' ),
-		window = (function() { return this; })(),
+	    var window = (function() { return this; })(),
+		socket = io.connect( 'http://' + window.location.host ),
 
 		// jQuery 1.8.3 $.browser
 	        matched,
