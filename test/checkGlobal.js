@@ -1,4 +1,5 @@
 var assert = require( 'assert' ),
+    request = require( 'request' ),
     checkGlobal = require( '../src/checkGlobal' );
 
 /*
@@ -22,7 +23,32 @@ for ( i = 0, length = scripts.length; i < length; i += 1 ) {
 
 }
 
+request.get( 'https://raw.github.com/jquery/qunit/v1.0.0/qunit/qunit.js', function( error, response, body ) {
+    if ( ! error && response.statusCode === 200 ) {
+	assert.ok( checkGlobal( body, 'QUnit' ) );
+    }
+});
 
+request.get( 'https://raw.github.com/jquery/qunit/v1.5.0/qunit/qunit.js', function( error, response, body ) {
+    if ( ! error && response.statusCode === 200 ) {
+	assert.ok( checkGlobal( body, 'QUnit' ) );
+    }
+});
 
+request.get( 'https://raw.github.com/jquery/qunit/v1.8.0/qunit/qunit.js', function( error, response, body ) {
+    if ( ! error && response.statusCode === 200 ) {
+	assert.ok( checkGlobal( body, 'QUnit' ) );
+    }
+});
 
+request.get( 'https://raw.github.com/jquery/qunit/v1.10.0/qunit/qunit.js', function( error, response, body ) {
+    if ( ! error && response.statusCode === 200 ) {
+	assert.ok( checkGlobal( body, 'QUnit' ) );
+    }
+});
 
+request.get( 'https://raw.github.com/jquery/qunit/v1.11.0/qunit/qunit.js', function( error, response, body ) {
+    if ( ! error && response.statusCode === 200 ) {
+	assert.ok( checkGlobal( body, 'QUnit' ) );
+    }
+});

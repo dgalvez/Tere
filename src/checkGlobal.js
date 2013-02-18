@@ -5,6 +5,7 @@ module.exports = function( scriptContents, name ) {
 
     var f = function() {
 	    this.window = this;
+	    this.window.addEventListener = function() {};
 	},
 	script = vm.createScript( '(' + f.toString() + ')();' + scriptContents ),
 	doc = jsdom( '<html><head></head><body></body></html>' ),
