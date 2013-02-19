@@ -40,11 +40,11 @@ module.exports = function() {
 	    browserID = matched.browser + ' v' + matched.version;
 
 	    socket.on( 'reload', function () {
-		window.location.reload();
+		window.location.reload( true );
 	    });
 
 	    socket.on( 'goto', function ( to ) {
-		window.location.href = to.url;
+		window.location.href = to.url.split( '#' )[0];
 	    });
 
 	    QUnit.begin = function() {

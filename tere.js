@@ -342,14 +342,26 @@
 	 * Let user to load same url in all the browsers attached
 	 */
 
-	rl.question( 'Reload all browsers with same url as: ', function( browserID ) {
+	rl.question( 'Reload all browsers with same url as: ', function( action ) {
 
-	    var browser = browsers[ browserID ];
+	    if ( action === 'reload' ) {
+
+		io.sockets.emit( 'reload' );
+		out.clear().print( 'Loading ...' );
+		return;
+
+	    }
+
+	    var ids = Object.keys( browsers ).join( '#' ),
+		index = ids.search( action ),
+
+		browser = index !== -1 ? browsers[ ids.slice( index ).split( '#' )[0] ]
+				       : false;
 
 	    if ( browser && browser.url ) {
 
 		io.sockets.emit( 'goto', { url: browser.url } );
-		out.clear().print( 'Loading ...' );
+		out.clear().print( 'Loading ' + browser.url + ' in all browsers ' );
 		return;
 
 	    }
