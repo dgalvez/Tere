@@ -342,7 +342,12 @@
 	 * Let user to load same url in all the browsers attached
 	 */
 
-	rl.question( 'Reload all browsers with same url as: ', function( action ) {
+	rl.question( 'Enter browser name or "reload": ', function( input ) {
+
+	    var action = input.toLowerCase(),
+		ids,
+		index,
+		browser;
 
 	    if ( action === 'reload' ) {
 
@@ -352,11 +357,12 @@
 
 	    }
 
-	    var ids = Object.keys( browsers ).join( '#' ),
-		index = ids.search( action ),
+	    ids = Object.keys( browsers ).join( '#' );
+	    index = ids.search( action );
 
-		browser = index !== -1 ? browsers[ ids.slice( index ).split( '#' )[0] ]
-				       : false;
+	    browser = index !== -1
+		      ? browsers[ ids.slice( index ).split( '#' )[0] ]
+		      : false;
 
 	    if ( browser && browser.url ) {
 
