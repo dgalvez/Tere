@@ -54,7 +54,10 @@
      */
     const rhtml = /<head([^>])*>/,
 
+	  useNode = '0.8.18',
+
 	  MESSAGE = {
+	      NODE_VERSION: 'Tere needs node v%s at least - please run: "node -v" to check your node version',
 	      USAGE: 'Usage: node tere.js -u [ url ] -d [ path to folder ] -f [ RegExp ]',
 	      FRAMEWORK_NOT_FOUND: 'Test framework not found',
 	      URL_NOT_REACHABLE: '%s -- Url not reachable',
@@ -64,14 +67,37 @@
 	  };
 
     /*
+     * Checking if the current node version >= useNode
+     */
+    if ( ! nodeVersionCheck() ) {
+
+	exit( MESSAGE.NODE_VERSION, useNode );
+
+    }
+
+    /*
      * Tools
      */
-    var exit = function( message, input ) {
+    function exit( message, input ) {
 
 	console.log( MESSAGE.USAGE + '\n' + out.f( message, 'failed' ), input || '' );
 	process.exit( 1 );
 
-    };
+    }
+
+    function nodeVersionCheck() {
+
+	var version = process.version
+			     .replace( 'v', '' )
+			     .split( '.' )
+			     .join( '' ),
+
+	    useVersion = useNode.split( '.' )
+				.join( '' );
+
+	return +version >= +useVersion;
+
+    }
 
     /*
      * User input and its validation
