@@ -89,13 +89,27 @@
 
 	var version = process.version
 			     .replace( 'v', '' )
-			     .split( '.' )
-			     .join( '' ),
+			     .split( '.' ),
 
-	    useVersion = useNode.split( '.' )
-				.join( '' );
+	    useVersion = useNode.split( '.' ),
 
-	return +version >= +useVersion;
+	    i, length;
+
+	if ( version + '' === useVersion + '' ) {
+	    return true;
+	}
+
+	for ( i = 0, length = version.length; i < length; i += 1 ) {
+
+	    if ( +version[ i ] > +useVersion[ i ] ) {
+
+		return true;
+
+	    }
+
+	}
+
+	return false;
 
     }
 
